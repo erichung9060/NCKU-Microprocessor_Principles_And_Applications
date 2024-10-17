@@ -14,7 +14,7 @@ List p=18f4520
     #define ans_h 0x000
     #define ans_l 0x001
     
-    MOVLW 15
+    MOVLW 24
     MOVWF n
     
     MOVLW 0
@@ -69,7 +69,9 @@ List p=18f4520
 	MOVFF fi2_l, fi1_l
 	MOVFF tmp_h, fi2_h
 	MOVFF tmp_l, fi2_l
-	GOTO fib
+	
+	RCALL fib
+	return
 	
     finish:
     end
