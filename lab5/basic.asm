@@ -26,7 +26,7 @@ _mysqrt:
 	GOTO exit
 	
 	MOVF PRODL, W
-	SUBWF number, W // W = number - ans*ans
+	SUBWF number, W
 	BZ exit // if ans*ans == number
 	
 	MOVF tmp, W
