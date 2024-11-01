@@ -51,7 +51,7 @@ int:
     CLRF PORTB          ; Clear PORTB
     BSF TRISB, 0        ; Set RB0 as input (TRISB = 0000 0001)
     CLRF LATA           ; Clear LATA
-    BCF TRISA, 2        ; Set RA0 as output (TRISA = 0000 0000)
+    BCF TRISA, 0        ; Set RA0 as output (TRISA = 0000 0000)
 
 ; Button check
 check_process:
@@ -60,7 +60,7 @@ check_process:
     BRA lightup         ; If button is pressed, branch to lightup
     
 lightup:
-    BTG LATA, 2         ; Toggle RA0 state (change LED state)
+    BTG LATA, 0         ; Toggle RA0 state (change LED state)
     DELAY 111, 70 ; Call delay macro to delay for about 0.25 seconds
     BRA check_process
 end
