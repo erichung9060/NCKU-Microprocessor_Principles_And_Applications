@@ -85,10 +85,10 @@ Initial:
     BSF IPR1, TMR2IP
     BSF PIE1 , TMR2IE
     MOVLW 0b11111111	        ; 將Prescale與Postscale都設為1:16，意思是之後每256個週期才會將TIMER2+1
-    MOVWF T2CON		            ; 而由於TIMER本身會是以系統時脈/4所得到的時脈為主
-    MOVLW 122		              ; 因此每256 * 4 = 1024個cycles才會將TIMER2 + 1
-    MOVWF PR2			            ; 若目前時脈為250khz，想要Delay 0.5秒的話，代表每經過125000cycles需要觸發一次Interrupt
-				                      ; 因此PR2應設為 125000 / 1024 = 122.0703125， 約等於122。
+    MOVWF T2CON		; 而由於TIMER本身會是以系統時脈/4所得到的時脈為主
+    MOVLW 122		; 因此每256 * 4 = 1024個cycles才會將TIMER2 + 1
+    MOVWF PR2			; 若目前時脈為250khz，想要Delay 0.5秒的話，代表每經過125000cycles需要觸發一次Interrupt
+				; 因此PR2應設為 125000 / 1024 = 122.0703125， 約等於122。
     MOVLW 0b00100000
     MOVWF OSCCON	        ; 記得將系統時脈調整成250kHz
     
