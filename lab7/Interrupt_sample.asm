@@ -88,27 +88,27 @@ endm
 ; 程式邏輯：會一直卡在main裡面做無限迴圈，按下RB0的按鈕後會觸發interrupt，跳到ISR執行
 ; ISR裡的內容會亮起所有在RA上的燈泡，Delay約0.5秒後熄滅。
 
-goto Initial			; 避免程式一開始就會執行到ISR這一段，要跳過。
-ISR:				      ; Interrupt發生時，會跳到這裡執行。
+goto Initial       ; 避免程式一開始就會執行到ISR這一段，要跳過。
+ISR:               ; Interrupt發生時，會跳到這裡執行。
     org 0x08			
     SETF LATA
-    DELAY  350 , 180	; 約500_000cycles數， 在1MHz的情況下大約會Delay0.5秒
+    DELAY  350 , 180     ; 約500_000cycles數， 在1MHz的情況下大約會Delay0.5秒
     CLRF LATA
     BCF INTCON, INT0IF
-    RETFIE              ; 離開ISR，回到原本程式執行的位址，同時會將GIE設為1，允許之後的interrupt能夠觸發
+    RETFIE               ; 離開ISR，回到原本程式執行的位址，同時會將GIE設為1，允許之後的interrupt能夠觸發
     
     
-Initial:				; 初始化的相關設定
+Initial:            ; 初始化的相關設定
     MOVLW 0x0F
-    MOVWF ADCON1		; 設定成要用數位的方式，Digitial I/O 
+    MOVWF ADCON1    ; 設定成要用數位的方式，Digitial I/O 
     
     CLRF TRISA
     CLRF LATA
     BSF TRISB,  0
     BCF RCON, IPEN
-    BCF INTCON, INT0IF		; 先將Interrupt flag bit清空
-    BSF INTCON, GIE		    ; 將Global interrupt enable bit打開
-    BSF INTCON, INT0IE		; 將interrupt0 enable bit 打開 (INT0與RB0 pin腳位置相同)
+    BCF INTCON, INT0IF      ; 先將Interrupt flag bit清空
+    BSF INTCON, GIE         ; 將Global interrupt enable bit打開
+    BSF INTCON, INT0IE      ; 將interrupt0 enable bit 打開 (INT0與RB0 pin腳位置相同)
     
 main:
     bra main
