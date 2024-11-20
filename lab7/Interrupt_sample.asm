@@ -89,7 +89,7 @@ endm
 ; ISR裡的內容會亮起所有在RA上的燈泡，Delay約0.5秒後熄滅。
 
 goto Initial			; 避免程式一開始就會執行到ISR這一段，要跳過。
-ISR:				    ; Interrupt發生時，會跳到這裡執行。
+ISR:				      ; Interrupt發生時，會跳到這裡執行。
     org 0x08			
     SETF LATA
     DELAY  350 , 180	; 約500_000cycles數， 在1MHz的情況下大約會Delay0.5秒
