@@ -1,3 +1,20 @@
+#define GIE 7
+#define IPEN 7
+#define INT0IF 1
+#define INT0IE 4
+    
+#define TMR2IF 1
+#define TMR2IP 1
+#define TMR2IE 1
+
+#define C 0
+#define DC 1
+#define Z 2
+#define OV 3
+#define N 4
+
+# -----------------------------------------------------------
+
 # MOVLF
 MOVLF macro literal, FileReg
     MOVLW literal
