@@ -76,62 +76,63 @@ MOVLF macro literal, FileReg
 endm
     
 org 0x00
-goto Initial			    
+goto Initial
+
 ISR:				
-    org 0x08                ; ????: ?0.5??????interrupt
-    INCF LATA               ; interrupt???LATA??
+    org 0x08                ; Interrupt vector address
+    INCF LATA               ; Increment LATA to track interrupts
     MOVLW 0b00001111
-    ANDWF LATA, F
+    ANDWF LATA, F           ; Mask LATA with 0x0F
     
     MOVLW 0
-    SUBWF LATA, W
-    BZ change_mode1
+    SUBWF LATA, W           ; Check LATA value
+    BZ change_mode1         ; Branch if LATA == 0
     
     MOVLW 4
-    SUBWF LATA, W
-    BZ change_mode2
+    SUBWF LATA, W           ; Check LATA value
+    BZ change_mode2         ; Branch if LATA == 4
 
     MOVLW 8
-    SUBWF LATA, W
-    BZ change_mode3
+    SUBWF LATA, W           ; Check LATA value
+    BZ change_mode3         ; Branch if LATA == 8
     
-    goto finish
+    goto finish             ; Skip to finish if no match
     
     change_mode1:
-	MOVLF 61, PR2
+	MOVLF 61, PR2          ; Set PR2 to 61 for mode 1
 	goto finish
 	
     change_mode2:
-	MOVLF 122, PR2
+	MOVLF 122, PR2         ; Set PR2 to 122 for mode 2
 	goto finish
 	
     change_mode3:
-	MOVLF 244, PR2
+	MOVLF 244, PR2         ; Set PR2 to 244 for mode 3
 	goto finish
     
     finish:
-    BCF PIR1, TMR2IF        ; ??????TMR2IF?? (??flag bit)
-    RETFIE
+    BCF PIR1, TMR2IF        ; Clear Timer2 interrupt flag
+    RETFIE                  ; Return from interrupt
     
+; Initialization routine
 Initial:			
     MOVLW 0x0F
-    MOVWF ADCON1
-    CLRF TRISA
-    CLRF LATA
-    BSF RCON, IPEN
-    BSF INTCON, GIE
-    BCF PIR1, TMR2IF       ; ????TIMER2??????????TMR2IF?TMR2IE?TMR2IP?
-    BSF IPR1, TMR2IP
-    BSF PIE1 , TMR2IE
-    MOVLW 0b11111111       ; ?Prescale?Postscale???1:16???????256??????TIMER2+1
-    MOVWF T2CON            ; ???TIMER?????????/4????????
+    MOVWF ADCON1            ; Configure PORTA as digital I/O
+    CLRF TRISA              ; Set PORTA as output
+    CLRF LATA               ; Clear PORTA data latch
+    BSF RCON, IPEN          ; Enable interrupt priority
+    BSF INTCON, GIE         ; Enable global interrupts
+    BCF PIR1, TMR2IF        ; Clear Timer2 interrupt flag
+    BSF IPR1, TMR2IP        ; Set Timer2 interrupt to high priority
+    BSF PIE1 , TMR2IE       ; Enable Timer2 interrupt
+    MOVLW 0b11111111        ; Set Timer2 prescale and postscale to 1:16
+    MOVWF T2CON             ; Enable Timer2 with prescaler and postscaler
     
-    MOVLW 61              ; ???256 * 4 = 1024?cycles???TIMER2 + 1
-    MOVWF PR2              ; ??????250khz???Delay 0.5?????????125000cycles??????Interrupt
-                           ; ??PR2??? 125000 / 1024 = 122.0703125? ???122?
+    MOVLW 61                ; Set Timer2 period register for 0.5s delay
+    MOVWF PR2
+    
     MOVLW 0b00100000
-    MOVWF OSCCON           ; ??????????250kHz
+    MOVWF OSCCON            ; Set internal oscillator frequency to 250 kHz
     
 main:		
-    bra main
-    
+    bra main                ; Infinite loop
