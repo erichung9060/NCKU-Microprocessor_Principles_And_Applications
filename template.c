@@ -143,7 +143,7 @@ void main(){
      * get_LED(); // return value: an integer, bit 0 -> LED1, bit 1 -> LED2, bit 2 -> LED3
      * 
      * set_LED_separately(1, 1, 0); // set LED1 and LED2 on, LED3 off
-     * set_LED_analog(512); input: 0 ~ 1023, represent brightness. NOTICE: LED need to be plugged into the CCP1 pin.
+     * set_LED_analog(512); // input: 0 ~ 1023, represent brightness. NOTICE: LED need to be plugged into the CCP1 pin.
      * 
      * VR_value_to_servo_angle(1024); // return value: -90 ~ 90. Change the variable register value to servo angle
      * VR_value_to_LED_analog(1024); // return value: 0 ~ 1024. Change the variable register value to LED brightness
