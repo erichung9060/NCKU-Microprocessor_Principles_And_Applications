@@ -1,8 +1,8 @@
 #include <pic18f4520.h>
 #include <stdio.h>
 #include <xc.h>
-#define _XTAL_FREQ 1000000
-#define delay(t) __delay_ms(t * 100);
+#define _XTAL_FREQ 4000000
+#define delay(t) __delay_ms(t * 1000);
 #define VR_MAX ((1 << 10) - 1)
 
 #pragma config OSC = INTIO67    // Oscillator Selection bits
@@ -39,7 +39,7 @@ int get_servo_angle(){
 
 void set_servo_angle(int angle) {
     int current = (CCPR1L << 2) + CCP1CONbits.DC1B;
-    int target = (int)((500 + (double)(angle + 90) / 180 * (2400 - 500)) / 8 / 4); // angle to pwn
+    int target = (int)((500 + (double)(angle + 90) / 180 * (2400 - 500)) / 8 / 4) * 8; // angle to pwn
     
     while(current != target){
         if(current < target) current++;
@@ -80,7 +80,7 @@ void __interrupt(high_priority) H_ISR(){
 
 void init_all(){
     // Configure oscillator
-    OSCCONbits.IRCF = 0b001;    // 125 kHz for servo control
+    OSCCONbits.IRCF = 0b110;    // 4MHz for servo control
     
     // Configure ADC
     TRISAbits.RA0 = 1;          // Set RA0 as input port
@@ -95,7 +95,7 @@ void init_all(){
     
     // Configure servo (PWM)
     T2CONbits.TMR2ON = 0b1;     // Timer2 on
-    T2CONbits.T2CKPS = 0b01;    // Prescaler 4
+    T2CONbits.T2CKPS = 0b11;    // Prescaler 16
     CCP1CONbits.CCP1M = 0b1100; // PWM mode
     PR2 = 0x9b;                 // Set PWM period
     
@@ -118,7 +118,6 @@ void init_all(){
     ADCON0bits.GO = 1;
 }
 
-int dir = 0;
 void button_pressed(){
     // Do sth when the button is pressed
     
@@ -150,7 +149,6 @@ void main(){
      * 
      * delay(1); // delay 1 second
      */
-    
     
     while(1) {
         // Do sth in main
