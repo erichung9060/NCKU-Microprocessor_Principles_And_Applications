@@ -257,13 +257,13 @@ int VR_value_to_LED_analog(int value){
     return value;
 }
 
-void variable_register_changed(int value);
+void adjustable_register_changed(int value);
 void button_pressed();
 
 void __interrupt(high_priority) H_ISR(){
-    if(PIR1bits.ADIF){ // Handle variable register interrupt
+    if(PIR1bits.ADIF){ // Handle adjustable register interrupt
         int value = (ADRESH << 8) + ADRESL;
-        variable_register_changed(value);
+        adjustable_register_changed(value);
         PIR1bits.ADIF = 0;
         __delay_ms(5);
     }
@@ -286,12 +286,12 @@ void button_pressed(){
     
 }
 
-void variable_register_changed(int value) {  // value: 0 ~ 1023
-    // Do sth when the variable register changes
+void adjustable_register_changed(int value) {  // value: 0 ~ 1023
+    // Do sth when the adjustable register changes
     /* Example:
      * set_servo_angle(VR_value_to_servo_angle(value));
      * set_LED_analog(VR_value_to_LED_analog(value));
-     * printf("%d\n", value); // print the variable register value on uart terminal
+     * printf("%d\n", value); // print the adjustable register value on uart terminal
      */
 
     
@@ -323,12 +323,12 @@ void main(){
      * set_LED_separately(1, 1, 0); // set LED1 and LED2 on, LED3 off
      * set_LED_analog(512); // input: 0 ~ 1023, represent brightness. NOTICE: LED need to be plugged into the CCP1 pin.
      * 
-     * VR_value_to_servo_angle(1024); // return value: -90 ~ 90. Change the variable register value to servo angle
-     * VR_value_to_LED_analog(1024); // return value: 0 ~ 1024. Change the variable register value to LED brightness
+     * VR_value_to_servo_angle(1024); // return value: -90 ~ 90. Change the adjustable register value to servo angle
+     * VR_value_to_LED_analog(1024); // return value: 0 ~ 1024. Change the adjustable register value to LED brightness
      * 
      * delay(1); // delay 1 second
      * 
-     * ClearBuffer(); // clear buffer
+     * printf(); // print on uart terminal
      */
     
     char str[STR_MAX];
