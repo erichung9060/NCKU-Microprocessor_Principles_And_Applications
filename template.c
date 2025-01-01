@@ -66,36 +66,46 @@
 
 // ---------------- Uart --------------------
 
-char mystring[STR_MAX];
-int lenStr = 0;
+char buffer[STR_MAX];
+int buffer_size = 0;
 
-void UART_Write(unsigned char data)  // Output on Terminal
-{
-    while (!TXSTAbits.TRMT);  // Busy Waiting
-    TXREG = data;             // write to TXREG will send data
+void putch(char data) {  // Output on Terminal
+    if (data == '\n' || data == '\r') {
+        while (!TXSTAbits.TRMT);
+        TXREG = '\r';
+        while (!TXSTAbits.TRMT);
+        TXREG = '\n';
+    } else {
+        while (!TXSTAbits.TRMT);
+        TXREG = data;
+    }
 }
 
 void ClearBuffer() {
     for (int i = 0; i < STR_MAX; i++)
-        mystring[i] = '\0';
-    lenStr = 0;
+        buffer[i] = '\0';
+    buffer_size = 0;
 }
 
 void MyusartRead() {
     char data = RCREG;
-    mystring[lenStr++] = RCREG;
-    if (data == '\r') {
-        UART_Write('\r');
-        UART_Write('\n');
-    }else{
-        UART_Write(data);
-    }
-    
+    if (!isprint(data) && data != '\r') return;
+    buffer[buffer_size++] = data;
+    putch(data);
 }
 
-char *GetString() {
-    return mystring;
+int GetString(char *str) {
+    if (buffer[buffer_size - 1] == '\r') {
+        buffer[--buffer_size] = '\0';
+        strcpy(str, buffer);
+        ClearBuffer();
+        return 1;
+    } else {
+        str[0] = '\0';
+        return 0;
+    }
 }
+
 
 void __interrupt(low_priority) Lo_ISR(void) {
     if (RCIF) {
@@ -219,7 +229,7 @@ void set_LED_analog(int value){
 
 int current_servo_angle = 0;
 int get_servo_angle(){
-    // double duty_cycle = ((CCPR1L << 2) + CCP1CONbits.DC1B) * 8 * 4;
+    // double duty_cycle = ((CCPR1L << 2) + CCP1CONbits.DC1B) * 4;
     // return (int)((duty_cycle - 500) / (2400 - 500) * 180 - 90);
     return current_servo_angle;
 }
@@ -276,17 +286,18 @@ void button_pressed(){
     
 }
 
-void variable_register_changed(int value){ // value: 0 ~ 1023
+void variable_register_changed(int value) {  // value: 0 ~ 1023
     // Do sth when the variable register changes
     /* Example:
      * set_servo_angle(VR_value_to_servo_angle(value));
      * set_LED_analog(VR_value_to_LED_analog(value));
+     * printf("%d\n", value); // print the variable register value on uart terminal
      */
-    
+
     
 }
 
-void keyboard_input(char *str){ // str: the words you type on the keyboard
+void keyboard_input(char *str){ // get line from keyboard: this function will be called after you click enter
     // Do sth when typing on keyboard
     /* Example:
     for (int i = 0; i < strlen(str); i++) {
@@ -326,9 +337,7 @@ void main(){
         // Do sth in main
         
         
-        
-        strcpy(str, GetString());
-        if(strlen(str)) keyboard_input(str);
-        if(ADCON0bits.GO == 0) ADCON0bits.GO = 1;
+        if (GetString(str)) keyboard_input(str);
+        if (ADCON0bits.GO == 0) ADCON0bits.GO = 1;
     }
 }
