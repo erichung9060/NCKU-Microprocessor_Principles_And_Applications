@@ -58,16 +58,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <xc.h>
 #define _XTAL_FREQ 4000000
 #define STR_MAX 100
 #define VR_MAX ((1 << 10) - 1)
-#define delay(t) __delay_ms(t * 1000);
-
-// ---------------- Uart --------------------
+// #define delay(t) __delay_ms(t * 1000);
 
 char buffer[STR_MAX];
 int buffer_size = 0;
+bool btn_interr = false;
+
+// ---------------- Uart --------------------
 
 void putch(char data) {  // Output on Terminal
     if (data == '\n' || data == '\r') {
@@ -233,11 +235,12 @@ int get_servo_angle() {
     return current_servo_angle;
 }
 
-void set_servo_angle(int angle) {
+int set_servo_angle(int angle) {
     int current = (CCPR1L << 2) + CCP1CONbits.DC1B;
     int target = (int)((500 + (double)(angle + 90) / 180 * (2400 - 500)) / 8 / 4) * 8;  // angle to pwn
-
+    btn_interr = false;
     while (current != target) {
+        if (btn_interr) return -1;
         if (current < target)
             current++;
         else
@@ -248,6 +251,7 @@ void set_servo_angle(int angle) {
         __delay_ms(1);
     }
     current_servo_angle = angle;
+    return 0;
 }
 
 int VR_value_to_servo_angle(int value) {
@@ -272,8 +276,18 @@ void __interrupt(high_priority) H_ISR() {
     if (INTCONbits.INT0IF) {  // Handle button interrupt
         button_pressed();
         __delay_ms(50);  // bouncing problem
+        btn_interr = true;
         INTCONbits.INT0IF = 0;
     }
+}
+
+int delay(double sec) {
+    btn_interr = false;
+    for (int i = 0; i < sec * 1000 / 10; i++) {
+        if (btn_interr) return -1;
+        __delay_ms(10);
+    }
+    return 0;
 }
 
 // --------------- TODO ------------------
@@ -315,7 +329,7 @@ void keyboard_input(char *str) {  // get line from keyboard: this function will 
 void main() {
     Initialize();
     /* Usage:
-     * set_servo_angle(-90); // input: -90 ~ 90
+     * set_servo_angle(-90); // input: -90 ~ 90, return value: -1 represents interrupt with button press, else 0
      * get_servo_angle(); // return value: -90 ~ 90
      *
      * set_LED(5); // 5 = 0b101, set LED1 and LED3 on, LED2 off
@@ -327,7 +341,7 @@ void main() {
      * VR_value_to_servo_angle(1024); // return value: -90 ~ 90. Change the variable register value to servo angle
      * VR_value_to_LED_analog(1024); // return value: 0 ~ 1024. Change the variable register value to LED brightness
      *
-     * delay(1); // delay 1 second
+     * delay(1); // delay 1 second, return value: -1 represents interrupt with button press, else 0
      *
      * printf(); // print on uart terminal
      */
