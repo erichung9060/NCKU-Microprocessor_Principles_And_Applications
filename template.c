@@ -55,10 +55,10 @@
 
 #include <ctype.h>
 #include <pic18f4520.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <xc.h>
 #define _XTAL_FREQ 4000000
 #define STR_MAX 100
@@ -298,7 +298,7 @@ void button_pressed() {
      * set_LED(get_LED() + 1);
      */
 
-    
+
 }
 
 void variable_register_changed(int value) {  // value: 0 ~ 1023
@@ -315,12 +315,11 @@ void variable_register_changed(int value) {  // value: 0 ~ 1023
 void keyboard_input(char *str) {  // get line from keyboard: this function will be called after you click enter
     // Do sth when typing on keyboard
     /* Example:
-    for (int i = 0; i < strlen(str); i++) {
-        if (isdigit(str[i])) {
-            int value = (int)str[i] - 48;
-            set_LED_analog(value * 100);
+        if(strcmp(str, "mode1") == 0) {
+            mode = 1;
+        } else if(strcmp(str, "mode2") == 0) {
+            mode = 2;
         }
-    }
      */
 
 
