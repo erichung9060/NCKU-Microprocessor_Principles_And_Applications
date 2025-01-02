@@ -1,4 +1,4 @@
-# PIC Microcontroller Interface Template
+# PIC Microcontroller Interface Template for Final Exam
 
 ## Overview
 This [Template](template.c) allows you to control LEDs, buttons, servos and variable resistors without using any low-level code (like changing register values). You can use the high-level functions provided in the template. Here are some examples:
