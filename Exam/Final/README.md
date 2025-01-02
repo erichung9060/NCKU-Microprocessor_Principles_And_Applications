@@ -17,11 +17,8 @@ set_LED_separately(1, 1, 0);
 4. Connect your hardware according to the [Wiring Guide](#circuit-wiring-information)
 5. Build and run your project
 
-
 ## Usage - Function Reference
-
 ### Servo
-
 ```c
 set_servo_angle(-90); 
 // input: -90 ~ 90
@@ -51,6 +48,7 @@ set_LED_analog(512);
 // input: 0 ~ 1023, represent brightness. 
 // NOTICE: LED need to be plugged into the CCP1 pin.
 ```
+
 ### Variable Register
 ```c
 VR_value_to_servo_angle(512);
